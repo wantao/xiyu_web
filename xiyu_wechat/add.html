@@ -1,0 +1,82 @@
+<html>
+<head>
+<meta charset="utf-8">
+	<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="ajaxfileupload.js"></script>
+	<script type="text/javascript">
+	function ajaxFileUpload(callback)
+	{
+		$("#loading")
+		.ajaxStart(function(){
+			$(this).show();
+		})
+		.ajaxComplete(function(){
+			$(this).hide();
+		});
+
+		$.ajaxFileUpload
+		(
+			{
+				url:'upload.php',
+				secureuri:false,
+				fileElementId:'fileToUpload',
+				dataType: 'json',
+				data:{name:'logan', id:'id'},
+				success: function (data, status)
+				{
+					if(typeof(data.error) != 'undefined')
+					{
+						if(data.error != '')
+						{
+							alert(data.error);
+						}else
+						{
+							alert(data.msg);
+						}
+					}else
+					{
+						callback(data);
+						
+					}
+				},
+				error: function (data, status, e)
+				{
+					alert(e);
+				}
+			}
+		)
+		
+		return false;
+
+	}
+	
+	function addToContentOnUpload(){
+		return ajaxFileUpload(function(data){
+			var imgflag = "[img]" + data.savename+"[/img]";
+			var content = $("#textArea").val();
+			$("#textArea").val(content + imgflag);
+		});
+	}
+	
+	function addToPicUrlOnUpload(){
+		return ajaxFileUpload(function(data){
+			var picurl = data.savename;
+			$("#picurl").val(picurl);
+		});
+	}
+	</script>	
+</head>
+<body>
+<form action="add.php" method="post">
+title:<input type="text" name="title" /><br>
+desc:<input type="text" name="description" /><br>
+picurl:<input type="text" name="picurl" id="picurl"/><button class="button" onclick="return addToPicUrlOnUpload();">Upload</button><br>
+content:<textarea id="textArea" name="content"></textarea>
+<button class="button" id="buttonUpload" onclick="return addToContentOnUpload();">Upload</button><br>
+<input type="submit" value="提交">
+</form>
+<form name="form" action="" method="POST" enctype="multipart/form-data">
+<input id="fileToUpload" type="file" size="45" name="fileToUpload" class="input" accept="image/*"><br>
+</form>
+</body>
+</html>

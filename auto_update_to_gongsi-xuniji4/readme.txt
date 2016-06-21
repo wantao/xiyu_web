@@ -1,0 +1,5 @@
+auto_update.bat
+功能说明：自动更新某个日期后的内容到gongsi-xuniji4下的www目录，使用者提交webmanager下的代码到svn后，运行auto_update.bat，可以更新svn上该日期后
+最新的代码到gongsi-xuniji4下的www目录，脚本会记录使用者本次更到gongsi-xuniji4的时间，记得提交该时间到svn
+
+缺点说明：svn diff 对中文路径会产生乱码，暂时未找到解决方法，所以以后不建议webmanager目录或其子目录下有中文

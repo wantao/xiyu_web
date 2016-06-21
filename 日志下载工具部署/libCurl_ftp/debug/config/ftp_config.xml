@@ -1,0 +1,21 @@
+<root>
+    <!--ftp服务器ip-->
+    <ftp_host value="192.168.1.6"/>
+    <!--ftp服务器port-->
+    <ftp_port value="8080"/>
+    <!--能访问ftp的用户名-->
+    <user_name value="root"/>
+    <!--能访问ftp的密码-->
+    <user_password value="123456"/>
+    <!--文件上传或下载的超时时间-->
+    <time_out value="60"/>
+    <!--文件上传或下载超时后，重新尝试上传或下载的次数-->
+    <try_times value="3"/>
+    <!--日志文件是否需要压缩-->
+    <is_compress value="1"/>
+    <!--压缩文件密码-->
+    <compress_file_password value="123456"/>
+    <!--日志发送时间间隔(s)-->
+    <send_log_time_interval value="900"/>
+    
+</root>

@@ -1,0 +1,30 @@
+后台管理系统
+运行环境: apache版本2.2以上, mysql 版本5.1以上, php 版本5.3.28
+数据库：使用游戏数据库z_gamedb, z_all，在application/config/database.php里设置数据库连接属性
+php扩展：php_curl.dll，mysql相关dll
+使用说明：(在Google Chrome浏览器测试)
+登陆入口：http://192.168.1.55/index.php/login/show
+登陆后在上方链接里可选择各个页面进行操作。
+
+充值系统
+运行环境: apache版本2.2以上, mysql 版本5.1以上, php 版本5.3.28
+php扩展：php_curl.dll，mysql相关dll
+数据库：使用游戏数据库z_all，在charge/config.php里设置数据库连接属性
+使用说明：
+充值接口（提供给客户端使用）：http://192.168.1.55/charge/charge.php
+网页测试充值的入口（测试用）：http://192.168.1.55/charge/index.php
+
+客服系统
+运行环境: apache版本2.2以上, mysql 版本5.1以上, php 版本5.3.28
+php扩展：mysql相关dll
+使用说明：
+数据库：使用z_gamecs.sql创建数据库，在CustomerService/config.php里设置数据库连接属性
+入口：http://192.168.1.55/customerservice/index.php
+
+微信平台
+运行环境: apache版本2.2以上, mysql 版本5.1以上, php 版本5.3.28
+php扩展：php_memcache.dll，mysql相关dll
+其他：需安装memcache服务端
+使用说明：
+微信平台接口（提供给微信服务器发送请求使用）：http://www.niuwa123.com/wechat/receiver.php
+公共账号自动回复设置页面（仅在公共账号的开发模式启用时使用）：http://www.niuwa123.com/wechat/editpage.php

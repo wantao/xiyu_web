@@ -1,0 +1,35 @@
+(一)先构建ftp服务器
+构建ftp_server的目的：
+主要用来存储gs_server,lg_server,name_server下的日志传输工具通过ftp协议传输过来的日志
+构建步骤：
+1）先在www目录下建立game_log;
+2)安装HomeFtpServer,配置ftp用户名（如：root），密码（如：123456），ftp端口（如设置为8080），家目录选到www/game_log
+3)设置打开homeftpserver时，启动ftp服务：Ftp Server-》Settings-》General-》勾选 Start Ftp Server On Program Startup
+4)打开防火墙对ftp端口（上面设置为8080）的开放,
+开始-》控制面板-》管理工具-》高级安全windows防火墙-》入站规则-》新建规则-》端口-》特定本地端口，填写8080（上面设置的ftp端口）
+
+
+（二）日志传输工具部署
+1）编译libcurl_ftp工程
+2）修改可执行程序所在的目录里config目录下的ftp_config.xml，修改ftp_host的value值为HomeFtpServer所在的ip，用户名，密码，端口设置为HomeFtpServer安装时设置的相应项，设置是否压缩文件，并设置压缩文件密码
+3）将修改可执行程序所在的目录拷贝一份，命名为log_ftp_send_tool(名字可以随便叫);
+3）将log_ftp_send_tool目录移到gs_server,lg_server,name_server程序所在的目录下
+4）将3个目录下，log_ftp_send_tool目录中的libCurl_ftp.exe启动
+
+（三）开机自动启动homeFtpServer和三个libCurl_ftp.exe
+1）在homeFtpSever的安装路径下，找到homeFtpServer的可执行程序，为其创建快捷方式，将该快捷方式放到（开始-》所有程序-》启动-》右键打开）目录中，
+2）在1）打开的目录中，创建脚本log_ftp_send_tool.bat，内容如下：（根据自己的路径，做相应修改）
+F:
+cd F:\wt\myWorkDir\wantao\server_source_branch\v1.0.0.0\bin\Zns-mdb\log_ftp_send_tool
+start libCurl_ftp.exe
+
+F:
+cd F:\wt\myWorkDir\wantao\server_source_branch\v1.0.0.0\bin\Zlg-mdb\log_ftp_send_tool
+start libCurl_ftp.exe
+
+F:
+cd F:\wt\myWorkDir\wantao\server_source_branch\v1.0.0.0\Zgs\gameserver\bin64\log_ftp_send_tool
+start libCurl_ftp.exe
+
+
+
