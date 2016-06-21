@@ -1,13 +1,15 @@
 <?php
+    require_once  '..\..\..\unity\self_error_code.php';
+    require_once  '..\..\..\unity\self_log.php';
 	if($_SERVER['REQUEST_METHOD'] != 'POST'){
-		echo "Forbidden. Only POST request is allowed.";
+		make_return_err_code_and_des(ErrorCode::ERROR_ONLY_POST_IS_ALLOWED,get_err_desc(ErrorCode::ERROR_ONLY_POST_IS_ALLOWED));
 		return;
 	}
 	
 	if(!isset($_POST['player_id']) || !isset($_POST['area_id']) || !isset($_POST['money']) || 
     !isset($_POST['currency']) || !isset($_POST['yuanbao']) || !isset($_POST['shop_type']) || !isset($_POST['product_id'])
 	    || !isset($_POST['item_id'])){
-		echo "Arguments error.";
+		make_return_err_code_and_des(ErrorCode::ERROR_PARAMS_ERROR,get_err_desc(ErrorCode::ERROR_PARAMS_ERROR));
 		return;
 	}
     
@@ -43,10 +45,16 @@
     $insert_sql = "insert into $order_tbl set `player_id` = $player_id, `area_id` = $area_id, `money` = $money, `currency` = '$currency', `yuanbao` = $yuanbao, `shop_type` = $shop_type, `product_id` = '$product_id',
     `item_id`=$item_id";
     if (!$ob_data_factory->db_update_data($insert_sql)) {
-        echo "generate order failure,sql:".$insert_sql." mysql_error:".mysql_error();
+        writeLog("generate order failure,sql:".$insert_sql." mysql_error:".mysql_error(),LOG_NAME::ERROR_LOG_FILE_NAME);
+        make_return_err_code_and_des(ErrorCode::ERROR_INNER_ERROR,get_err_desc(ErrorCode::ERROR_INNER_ERROR));
         return;
     }
     $mysqli_tmp = &$ob_data_factory->mysql->get_mysqli();
-    echo "generate order success,order_id:".$mysqli_tmp->insert_id;
+    $result_ret = array();
+    $result_ret["error_code"]=ErrorCode::SUCCESS;
+    $result_ret["order_id"]=$mysqli_tmp->insert_id;
+    $Res = json_encode($result_ret);
+    print_r(urldecode($Res));
+    //echo "generate order success,order_id:".$mysqli_tmp->insert_id;
 	
 ?>

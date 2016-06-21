@@ -1,14 +1,16 @@
 <?php
 	require_once  '..\..\..\unity\self_http.php';
 	require_once  '..\..\..\unity\self_data_operate_factory.php';
+	require_once  '..\..\..\unity\self_global.php';
+	require_once  '..\..\..\unity\self_error_code.php';
 	if($_SERVER['REQUEST_METHOD'] != 'POST'){
-		echo "Forbidden. Only POST request is allowed.";
-		exit;
+		make_return_err_code_and_des(ErrorCode::ERROR_ONLY_POST_IS_ALLOWED,get_err_desc(ErrorCode::ERROR_ONLY_POST_IS_ALLOWED));
+		return;
 	}
 
 	if(!isset($_POST['game_order']) || !isset($_POST['transaction_id'])){
-		echo "Arguments error.";
-		exit;
+		make_return_err_code_and_des(ErrorCode::ERROR_PARAMS_ERROR,get_err_desc(ErrorCode::ERROR_PARAMS_ERROR));
+		return;
 	}
 
 	require_once("config.php");
@@ -27,11 +29,13 @@
     $select_sql = "select * from $order_tbl where `id`=$game_order and `pay_ok`=0";
     $db_result = $ob_data_factory->db_get_data($select_sql);
     if (!$db_result) {
-		echo "db operate failure";
-		exit;	
+		writeLog("db operate failure,sql:".$select_sql,LOG_NAME::ERROR_LOG_FILE_NAME);
+        make_return_err_code_and_des(ErrorCode::ERROR_INNER_ERROR,get_err_desc(ErrorCode::ERROR_INNER_ERROR));
+        return;
     }
 	if (-1 == $db_result) {
-		echo "not find the game_order".$game_order;
+		writeLog("not find the game_order".$game_order,LOG_NAME::ERROR_LOG_FILE_NAME);
+		make_return_err_code_and_des(ErrorCode::NOT_FIND_ORDER,get_err_desc(ErrorCode::NOT_FIND_ORDER));
 		return;
 	}	
 	$row = $db_result[0];
@@ -49,24 +53,27 @@
     $player_from = 'Niuwa';
     $mysqli_tmp = &$ob_data_factory->mysql->get_mysqli();
     if (!$mysqli_tmp->autocommit(false)) {
-        echo "autocommit false error";
         $mysqli_tmp->autocommit(true);
-        exit;
+        writeLog("autocommit false error,game_order:".$game_order,LOG_NAME::ERROR_LOG_FILE_NAME);
+        make_return_err_code_and_des(ErrorCode::ERROR_INNER_ERROR,get_err_desc(ErrorCode::ERROR_INNER_ERROR));
+        return;
     }
 	if (!$mysqli_tmp->begin_transaction()) {
-	    echo "begin_transaction error";
 	    $mysqli_tmp->autocommit(true);
-	    exit;
+	    writeLog("begin_transaction error,game_order:".$game_order,LOG_NAME::ERROR_LOG_FILE_NAME);
+	    make_return_err_code_and_des(ErrorCode::ERROR_INNER_ERROR,get_err_desc(ErrorCode::ERROR_INNER_ERROR));
+	    return;
 	}
 	try{
 		$update_pay_ok = "update $order_tbl set `pay_ok`=1 where `id`=$game_order ";
 		if (!$ob_data_factory->db_update_data($update_pay_ok)) {
 		    echo "update_pay_ok failure";
-		    if (!$mysqli_tmp->rollback()) {
-		          echo "rollback failure game_order:".$game_order;    
+		    if (!$mysqli_tmp->rollback()) {    
+		          writeLog("rollback failure game_order::".$game_order,LOG_NAME::ERROR_LOG_FILE_NAME);
+		          make_return_err_code_and_des(ErrorCode::ERROR_INNER_ERROR,get_err_desc(ErrorCode::ERROR_INNER_ERROR));
 		    }
 		    $mysqli_tmp->autocommit(true);
-		    exit;
+		    return;
 		}
 		
 		$insert_sql = "insert into $table set `Id` = $game_order, `player_id` = '$player_id', `player_from` = '$player_from', 
@@ -75,34 +82,38 @@
 		if (!$ob_data_factory->db_update_data($insert_sql)) {
 			echo "insert failure,game_order:".$game_order;
 		    if (!$mysqli_tmp->rollback()) {
-		          echo "insert rollback failure game_order:".$game_order;    
+		          writeLog("insert rollback failure game_order:".$game_order,LOG_NAME::ERROR_LOG_FILE_NAME);
+		          make_return_err_code_and_des(ErrorCode::ERROR_INNER_ERROR,get_err_desc(ErrorCode::ERROR_INNER_ERROR));
 		    }
 		    $mysqli_tmp->autocommit(true);
-		    exit;
+		    return;
 		}
 	} catch (Exception $e) {
-		echo "throw exception";
 		if (!$mysqli_tmp->rollback()) {
-		    echo "rollback failure game_order:".$game_order;
+		    writeLog("throw exception rollback failure game_order:".$game_order,LOG_NAME::ERROR_LOG_FILE_NAME);
+		    make_return_err_code_and_des(ErrorCode::ERROR_INNER_ERROR,get_err_desc(ErrorCode::ERROR_INNER_ERROR));
 		}
 		$mysqli_tmp->autocommit(true);
-		exit;
+		return;
 	}
 	if (!$mysqli_tmp->commit()) {
-	    echo "commit failure,game_order:".$game_order;
 	    if (!$mysqli_tmp->rollback()) {
-	        echo "commit rollback failure game_order:".$game_order;
+	        writeLog("commit rollback failure game_order:".$game_order,LOG_NAME::ERROR_LOG_FILE_NAME);
+	        make_return_err_code_and_des(ErrorCode::ERROR_INNER_ERROR,get_err_desc(ErrorCode::ERROR_INNER_ERROR));
 	    }
 	    $mysqli_tmp->autocommit(true);
-	    exit;
+	    return;
 	}
 	$mysqli_tmp->autocommit(true);
 	
     $type='chongzhi_ntf';
-	$url = "http://127.0.0.1:24000?type=$type&game_order=$game_order";
+	$url = global_url_prefix::e_transfer_server_url."?type=$type&game_order=$game_order";
     $http = new CMyHttp();
 	$content = $http->get($url,5);
     
-    echo $content;
-	echo "Charge finished.";
+	$result_ret = array();
+	$result_ret["error_code"]=ErrorCode::SUCCESS;
+	$result_ret["error_desc"]="Charge finished ".$content;
+	$Res = json_encode($result_ret);
+	print_r(urldecode($Res));
 ?>

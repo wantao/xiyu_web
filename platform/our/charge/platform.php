@@ -1,5 +1,6 @@
 <?php
     require_once  '..\..\..\unity\self_http.php';
+    require_once  '..\..\..\unity\self_global.php';
 	if($_SERVER['REQUEST_METHOD'] != 'POST'){
 		echo "Forbidden. Only POST request is allowed.";
 		return;
@@ -11,17 +12,17 @@
 	}
 	
 	$game_order = $_POST['game_order'];
-    //Èç¹ûÊÇ¶©µ¥ºÅÀïÓĞ×Ö·û´®£¬ÔòÊÇlua´«¹ıÀ´µÄÊ®Áù½øÖÆ¶©µ¥£¬ĞèÒª×ª»»Îª10½øÖÆ
+    //å¦‚æœæ˜¯è®¢å•å·é‡Œæœ‰å­—ç¬¦ä¸²ï¼Œåˆ™æ˜¯luaä¼ è¿‡æ¥çš„åå…­è¿›åˆ¶è®¢å•ï¼Œéœ€è¦è½¬æ¢ä¸º10è¿›åˆ¶
 	$preg2= '/[A-Za-z]/';
 	if(preg_match($preg2,$game_order)){
-		//16½øÖÆ ×ª 10½øÖÆ
+		//16è¿›åˆ¶ è½¬ 10è¿›åˆ¶
 		$game_order = hexdec($game_order); 
 	}
 	$transaction_id = $game_order;
 	
 	$params = "game_order=$game_order&transaction_id=$transaction_id";
 	
-	$url = "http://myxiyu.com/platform/our/charge/charge.php";
+	$url = global_url_prefix::e_charge_dir."charge.php";
     $http = new CMyHttp();
 	$content = $http->post($url, $params);
 	

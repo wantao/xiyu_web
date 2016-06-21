@@ -54,6 +54,10 @@
 		const ERROR_PROCESS_ORDER_FAILURE = -47;//处理订单失败
 		const ERROR_NOT_CONFIG_SERVER_LIST = -48;//未配置服务器列表
 		const ERROR_AUTH_FAILURE = -49;//认证失败
+		const ERROR_ONLY_POST_IS_ALLOWED = -50;//只允许post方法
+		const ERROR_PARAMS_ERROR = -51;//参数错误
+		const ERROR_INNER_ERROR = -52;//内部错误
+		
 		
 	    const UNKOWN_ERROR = -10000;//未知错误
 	}
@@ -207,6 +211,15 @@
 		}
 		if (ErrorCode::ERROR_AUTH_FAILURE == $err_code) {
 			return "AUTH_FAILURE";//认证失败
+		}
+		if (ErrorCode::ERROR_ONLY_POST_IS_ALLOWED == $err_code) {
+		    return "ONLY_POST_IS_ALLOWED";//只允许post方法
+		}
+		if (ErrorCode::ERROR_PARAMS_ERROR == $err_code) {
+		    return "PARAMS_ERROR";//参数错误
+		}
+		if (ErrorCode::ERROR_INNER_ERROR == $err_code) {
+		    return "INNER_ERROR";//内部错误
 		}
 		return "unkonw_err_desc";//未知错误描述
 	}

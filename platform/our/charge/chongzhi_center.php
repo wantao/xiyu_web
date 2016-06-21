@@ -42,7 +42,8 @@ window.onload=function(){
 	if(!game_order || !transaction_id ){
 		return;
 	}
-	post('http://127.0.0.1/xiyu/platform/our/charge/platform.php', {'game_order' :game_order, 'transaction_id':transaction_id});
+	var url_prefix = <?php require_once  '..\..\..\unity\self_global.php'; echo global_url_prefix::e_charge_dir;?>;
+	post(url_prefix.'platform.php', {'game_order' :game_order, 'transaction_id':transaction_id});
 };
 </script>
 <html>
@@ -50,7 +51,7 @@ window.onload=function(){
 <title>充值中心</title>
 <body>
 <form action="platform.php" method="POST">
-<a>game_order<input type="text" name="game_order" value=""></a><br>
+<a>game_order<input type="text" name="game_order" value=<?php echo $_POST['game_order']?>></a><br>
 <a>transaction_id<input type="text" name="transaction_id" value=<?php echo time() ?>></a><br>
 <input type="submit" value="submit">
 </form>

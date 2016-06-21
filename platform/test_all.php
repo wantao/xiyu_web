@@ -1,6 +1,7 @@
 <?php
     require_once  '..\unity\self_http.php';
     require_once  '..\unity\self_global.php';
+    require_once  '..\unity\self_error_code.php';
     
     $platform_id = 0;
   
@@ -48,7 +49,19 @@
     $get_notice_info = trim(trim(test_get_notice($server_id)),chr(239).chr(187).chr(191));
     $get_notice_info = json_decode($get_notice_info);
     print_r($get_notice_info);
+  
+    //下单测试
+    echo "<br>"."test test_order_center.php"."<br>";
+    $get_order_info = trim(trim(test_generate_order()),chr(239).chr(187).chr(191));
+    $get_order_info = json_decode($get_order_info);
+    print_r($get_order_info);
+    if ($get_order_info->error_code != ErrorCode::SUCCESS) return;
     
+    //测试充值
+    echo "<br>"."test test_chongzhi_center.php"."<br>";
+    $get_chongzhi_info = trim(trim(test_chongzhi_center($get_order_info->order_id)),chr(10).chr(239).chr(187).chr(191));
+    $get_chongzhi_info = json_decode($get_chongzhi_info);
+    print_r($get_chongzhi_info);
     
     
     function test_get_user_id_and_token()
@@ -109,5 +122,20 @@
         return $http->post($url, $params);
     }
     
+    function test_generate_order()
+    {
+        $http = new CMyHttp();
+        $params = "player_id=1000054&area_id=1&money=1&currency=".'RMB'."&yuanbao=10&shop_type=0&product_id=".'dg_cay_10_stone'."&item_id=101";
+        $url = global_url_prefix::e_charge_dir.'generate_order.php';
+        return $http->post($url, $params);
+    }
+    
+    function test_chongzhi_center($game_order)
+    {
+        $http = new CMyHttp();
+        $params = "game_order=$game_order&transaction_id=$game_order";
+        $url = global_url_prefix::e_charge_dir.'charge.php';
+        return $http->post($url, $params);
+    }
     
 ?>

@@ -48,7 +48,8 @@ window.onload=function(){
 	if(!player_id || !area_id || !money || !currency || !yuanbao || !shop_type || !product_id || !item_id){
 		return;
 	}
-	post('http://127.0.0.1/xiyu/platform/our/generate_order.php', {'player_id' :player_id, 'area_id':area_id, 'money':money,
+	var url_prefix = <?php require_once  '..\..\..\unity\self_global.php'; echo global_url_prefix::e_charge_dir;?>;
+	post(url_prefix.'generate_order.php', {'player_id' :player_id, 'area_id':area_id, 'money':money,
     'currency' :currency, 'yuanbao':yuanbao, 'shop_type':shop_type,'product_id':product_id,'item_id':item_id});
 };
 </script>
@@ -57,14 +58,14 @@ window.onload=function(){
 <title>下单中心</title>
 <body>
 <form action="generate_order.php" method="POST">
-<a>player_id<input type="text" name="player_id" value=""></a><br>
-<a>area_id<input type="text" name="area_id" value=""></a><br>
-<a>money<input type="text" name="money" value=""></a><br>
-<a>currency<input type="text" name="currency" value=""></a><br>
-<a>yuanbao<input type="text" name="yuanbao" value=""></a><br>
-<a>shop_type<input type="text" name="shop_type" value=""></a><br>
-<a>product_id<input type="text" name="product_id" value=""></a><br>
-<a>item_id<input type="text" name="item_id" value=""></a><br>
+<a>player_id<input type="text" name="player_id" value="1000054"></a><br>
+<a>area_id<input type="text" name="area_id" value="1"></a><br>
+<a>money<input type="text" name="money" value="1"></a><br>
+<a>currency<input type="text" name="currency" value="RMB"></a><br>
+<a>yuanbao<input type="text" name="yuanbao" value="10"></a><br>
+<a>shop_type<input type="text" name="shop_type" value="0"></a><br>
+<a>product_id<input type="text" name="product_id" value="dg_cay_10_stone"></a><br>
+<a>item_id<input type="text" name="item_id" value="101"></a><br>
 <input type="submit" value="submit">
 </form>
 </body>
